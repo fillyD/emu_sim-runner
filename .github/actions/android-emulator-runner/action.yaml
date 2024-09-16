@@ -27,10 +27,10 @@ runs:
       - name: run emulator
         uses: reactivecircus/android-emulator-runner@v2.32.0
         with:
-          api-level: ${{ inputs.api-level || 30 }}
+          api-level: ${{ inputs.api-level || 29 }}
           # target: ${{ matrix.target }}
           # arch: x86_64
-          profile: Pixel 7
+          # profile: Pixel 7
           # script: ./gradlew connectedCheck
           script: echo "done."
 
