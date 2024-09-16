@@ -1,0 +1,11 @@
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Android runner
+        uses: "./.github/actions/android-emulator-runner"
+        with:
+          api-level: 23
