@@ -1,6 +1,14 @@
 name: Test Emulator
 
-on: [push]
+on: 
+  push:
+  workflow_dispatch:
+    inputs:
+      api-level:
+        description: 'API Level'
+        required: true
+        default: 23
+        type: number  
 
 jobs:
   test:
@@ -9,4 +17,4 @@ jobs:
       - name: Android runner
         uses: "./.github/actions/android-emulator-runner"
         with:
-          api-level: 23
+          api-level: ${{inputs.api-level}}
