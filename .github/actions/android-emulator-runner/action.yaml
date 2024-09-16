@@ -7,41 +7,60 @@ inputs:
 runs:
   using: 'composite'
   steps:
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
-        shell: bash
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3.2.1
+        with:
+          sdk-version: '30'
 
-      - name: Gradle cache
-        uses: gradle/actions/setup-gradle@v3
+      - name: Create AVD
+        run: echo "no" | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager create avd -n Pixel7 -k "system-images;android-30;google_apis;x86_64" --device "pixel" --package "system-images;android-30;google_apis;x86_64"
+
+      - name: Start Emulator
+        run: $ANDROID_SDK_ROOT/emulator/emulator -avd Pixel7 -no-audio -no-window
+
+      - name: Shutdown Emulator
+        run: $ANDROID_SDK_ROOT/platform-tools/adb emu kill
+
+      # - name: Enable KVM
+      #   run: |
+      #     echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+      #     sudo udevadm control --reload-rules
+      #     sudo udevadm trigger --name-match=kvm
+      #   shell: bash
+
+      # - name: Gradle cache
+      #   uses: gradle/actions/setup-gradle@v3
         
-      - name: AVD cache
-        id: avd-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.android/avd/*
-            ~/.android/adb*
-          key: avd-${{ inputs.api-level }}
+      # - name: AVD cache
+      #   id: avd-cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/.android/avd/*
+      #       ~/.android/adb*
+      #     key: avd-${{ inputs.api-level }}
 
-      - name: create AVD and generate snapshot for caching
-        if: steps.avd-cache.outputs.cache-hit != 'true'
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ inputs.api-level }}
-          force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
+      # - name: create AVD and generate snapshot for caching
+      #   if: steps.avd-cache.outputs.cache-hit != 'true'
+      #   uses: reactivecircus/android-emulator-runner@v2
+      #   with:
+      #     api-level: ${{ inputs.api-level }}
+      #     force-avd-creation: false
+      #     emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+      #     disable-animations: false
+      #     script: echo "Generated AVD snapshot for caching."
 
-      - name: run tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ inputs.api-level }}
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          script: avdmanager list device
-          script: echo "Emulator started."
+      # - name: run tests
+      #   uses: reactivecircus/android-emulator-runner@v2
+      #   with:
+      #     api-level: ${{ inputs.api-level }}
+      #     force-avd-creation: false
+      #     emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+      #     disable-animations: true
+      #     script: avdmanager list device
+      #     script: echo "Emulator started."
