@@ -1,0 +1,22 @@
+name: Test Emulator
+
+on: 
+  push:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'iOS Simulator model'
+        required: true
+        default: 'iPhone 15'
+        type: string  
+
+jobs:
+  test:
+    runs-on: macos-14
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: iOS runner
+        uses: "./.github/actions/ios-simulator-runner"
+        with:
+          model: ${{inputs.model}}

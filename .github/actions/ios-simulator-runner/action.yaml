@@ -1,0 +1,19 @@
+name: iOS Simulator Runner
+description: Run iOS Emulator
+inputs:
+  xcode-version:
+    description: 'Xcode version'
+    default: '15.3'
+    required: false
+  model:
+    description: 'iOS Simulator model'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - uses: maxim-lobanov/setup-xcode@v1.6.0
+      with:
+        xcode-version: 'latest-stable'
+    - uses: futureware-tech/simulator-action@v3
+      with:
+        model: ${{inputs.model}}
