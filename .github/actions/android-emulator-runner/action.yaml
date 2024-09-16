@@ -44,3 +44,4 @@ runs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: avdmanager list device
+          script: echo "Emulator started."
